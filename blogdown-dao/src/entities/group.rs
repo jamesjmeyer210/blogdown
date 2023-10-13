@@ -5,9 +5,9 @@ use blogdown_model::Group;
 
 pub(crate) struct GroupEntity
 {
-    id: u32,
-    name: String,
-    created_on_utc: DateTime<Utc>,
+    pub(crate) id: u32,
+    pub(crate) name: String,
+    pub(crate) created_on_utc: DateTime<Utc>,
 }
 
 impl From<GroupEntity> for Group {

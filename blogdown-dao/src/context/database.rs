@@ -1,6 +1,5 @@
 use std::sync::Arc;
 use sqlx::SqlitePool;
-use blogdown_model::{Blog, Comment, Group, User};
 use crate::context::{JoinTable, Table};
 use crate::entities::GroupEntity;
 
@@ -16,7 +15,7 @@ pub(crate) struct Database<'c> {
 }
 
 impl<'a> Database<'a> {
-    pub async fn new(sql_url: &String) -> Database<'a> {
+    pub(crate) async fn new(sql_url: &String) -> Database<'a> {
         let connection = SqlitePool::connect(sql_url).await.unwrap();
         let pool = Arc::new(connection);
 
