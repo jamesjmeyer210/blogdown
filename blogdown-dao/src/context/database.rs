@@ -15,7 +15,7 @@ pub(crate) struct Database<'c> {
 }
 
 impl<'a> Database<'a> {
-    pub(crate) async fn new(sql_url: &String) -> Database<'a> {
+    pub(crate) async fn new(sql_url: &str) -> Database<'a> {
         let connection = SqlitePool::connect(sql_url).await.unwrap();
         let pool = Arc::new(connection);
 

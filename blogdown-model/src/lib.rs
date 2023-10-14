@@ -4,6 +4,15 @@ pub struct Group
     pub name: String,
 }
 
+impl From<&str> for Group {
+    fn from(value: &str) -> Self {
+        Group {
+            id: 0,
+            name: value.to_string()
+        }
+    }
+}
+
 pub struct User<'a>
 {
     pub id: u32,

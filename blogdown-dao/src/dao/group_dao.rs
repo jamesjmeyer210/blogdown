@@ -1,5 +1,7 @@
 use std::time::SystemTime;
 use chrono::{DateTime, Utc};
+use sqlx::Row;
+use sqlx::sqlite::SqliteRow;
 use blogdown_model::Group;
 use crate::entities::GroupEntity;
 use crate::context::Table;
@@ -19,6 +21,18 @@ impl<'c> Table<'c, GroupEntity> {
             .execute(&*self.pool)
             .await
             .map(|x|x.rows_affected())
+    }
+
+    pub(crate) async fn group_exists(&self, name: &str) -> Result<u32, sqlx::Error> {
+        sqlx::query(r#"
+            select count(*)
+            from `groups`
+            where `name` = ?
+            "#)
+            .bind(name)
+            .map(|row: SqliteRow|row.get(0))
+            .fetch_one(&*self.pool)
+            .await
     }
 
     pub(crate) async fn get_group_by_name(&self, name: &str) -> Result<Group, sqlx::Error> {

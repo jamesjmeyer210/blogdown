@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use sqlx::FromRow;
 use blogdown_model::Group;
 use crate::context::{Database, Table};
@@ -12,19 +13,23 @@ pub struct DaoContext<'a> {
 }
 
 impl<'a> DaoContext<'a> {
-    pub async fn new(sql_str: &String) -> DaoContext<'a> {
+    pub async fn new(sql_str: &str) -> DaoContext<'a> {
         DaoContext {
             _database: Database::new(sql_str).await
         }
     }
+
+    pub fn groups(&'a self) -> GroupCrud {
+        GroupCrud::from(self._database.groups.clone())
+    }
 }
 
 pub struct GroupCrud<'c> {
-    _table: Table<'c, GroupEntity>
+    _table: Arc<Table<'c, GroupEntity>>
 }
 
-impl<'c> From<Table<'c, GroupEntity>> for GroupCrud<'c> {
-    fn from(value: Table<'c, GroupEntity>) -> Self {
+impl<'c> From<Arc<Table<'c, GroupEntity>>> for GroupCrud<'c> {
+    fn from(value: Arc<Table<'c, GroupEntity>>) -> Self {
         Self {
             _table: value
         }
@@ -37,8 +42,8 @@ impl<'c> GroupCrud<'c> {
     }
 
     pub async fn group_exists(&self, name: &str) -> Result<bool, sqlx::Error> {
-        self._table.get_group_by_name(name)
+        self._table.group_exists(name)
             .await
-            .map(|x|true)
+            .map(|x|x > 0)
     }
 }
